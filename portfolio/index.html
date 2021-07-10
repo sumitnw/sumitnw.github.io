@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Portfolio</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;700&display=swap');
+
+        /* Css Reset */
+        * {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .t-5 {
+            font-size: 18px;
+        }
+
+        .bg-primary {
+            background-color: #264653;
+            color: white;
+        }
+
+        /* Nav section */
+        .nav {
+            max-width: 1200px;
+            margin: auto;
+            display: flex;
+        }
+
+        .brand {
+            flex: 2;
+            padding: 5px;
+        }
+
+        .nav-section>ul {
+            list-style: none;
+        }
+
+        .nav-section li {
+            margin-right: 0px;
+            display: inline-block;
+            padding: 10px;
+        }
+
+        a:link {
+            text-decoration: none;
+            color: white;
+        }
+        .nav-section a:visited{
+            text-decoration: none;
+            color: #f4a261;
+        }
+        .nav-section a:hover {
+            border-bottom: 2px solid #f4a261;
+
+        }
+
+        .main {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        /* Section 1*/
+        .section1 {
+            height: 40vh;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .sect1-content {
+            margin: 50px auto;
+        }
+        .img-content{
+            display: block;
+            margin: auto ;
+        }
+        /* Section 2*/
+        #section2 {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        #section2 > h3{
+            text-align: center;
+        }
+
+        .card {
+            
+            background-color: #264653;
+            color: white;
+            border-radius: 10px;
+            max-width: 300px;
+            margin: 10px auto;
+            padding: 10px;
+        }
+        .card a{
+            color: #f4a261;
+            text-align: none;
+        }
+
+        /* Profile Image */
+        #avatar {
+            filter: grayscale(100%);
+        }
+
+        #loader {
+            width: 200px;
+            height: 200px;
+            border-top: 10px solid rgb(36, 163, 236);
+            border-radius: 50%;
+            animation: spin 2s linear infinite;
+            margin: 150px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            50% {
+                border-color: red;
+                transform: rotate(180deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loader">
+    </div>
+    <div class="navbar bg-primary">
+        <div class="nav">
+            <div class="brand">
+                <h1></h1>
+            </div>
+            <div class="nav-section">
+                <ul class="t-5">
+                    <li><a href="#">Home</li>
+                    <li><a href="#">Projects</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+    <div class="main">
+        <div class="section1">
+            <div class="sect1-content">
+                <h3 id="name"></h3>
+                <p id="bio"></p>
+                <p id="followersInfo"></p>
+                <p>View my <a id="gitLink">Github Account.</a></p>
+            </div>
+            <div class="img-content">
+                <img id="avatar" width="200">
+            </div>
+        </div>
+        <hr>
+
+        <!-- Github Repos -->
+        <h3>Few Repo On Github</h3><br>
+        <div id="section2">
+            <!-- <div class="card">
+                <h3>Repo Name: Abcd</h3>
+                <a href="#">View in Github</a>
+                <p>Description</p>
+            </div>
+            <div class="card">
+                <h3>Repo Name: Abcd</h3>
+                <a href="#">View in Github</a>
+                <p>Description</p>
+            </div>
+            <div class="card">
+                <h3>Repo Name: Abcd</h3>
+                <a href="#">View in Github</a>
+                <p>Description</p>
+            </div> -->
+        </div>
+
+
+        <div id="tweets">
+            <a class="twitter-timeline" data-width="300" data-height="500" data-theme="dark"
+                href="https://twitter.com/TEDTalks?ref_src=twsrc%5Etfw">Tweets by TEDTalks</a>
+            <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+        </div>
+    </div>
+
+    <script>
+        fetch("https://api.github.com/users/singh-sumit")
+            .then(response => response.json())
+            .then(function (data) {
+                console.log(data)
+
+                let followersCount = data['followers']
+                let followersDesc = `I am being followed by ${followersCount} awesome persons.`
+
+                document.getElementById("avatar").src = data['avatar_url']
+                document.getElementById("name").textContent = data['name']
+                document.getElementById("bio").textContent = data['bio']
+                document.getElementById("followersInfo").textContent = followersDesc
+                document.getElementById("gitLink").href = data['html_url']
+
+                // grab section2 for project repo listing
+                repoCardWrapper = document.getElementById("section2")
+
+                // Extract repository array
+                repos_url = data["repos_url"]
+                
+
+                fetch(repos_url)
+                .then(response => response.json())
+                .then(function (repos_array) {
+                    //console.log(repos_array)
+                    for (let index=0; index<repos_array.length; index++){
+                        if (repos_array[index]["fork"]==false){
+                            console.log(repos_array[index]["name"])
+                            // create html div element with class = card, id =card-1(inc)
+                            elem = document.createElement("div")
+                            elem.setAttribute("class", "card")
+                            elem.setAttribute("id", `card-${index}`)
+                            let htmlMsg = `<h3>Repo Name: ${repos_array[index]["name"]}</h3>
+                            <a href="${repos_array[index]["html_url"]}">View in Github</a>
+                            <p>Description :${repos_array[index]["description"]}</p>`
+
+                            elem.innerHTML = htmlMsg
+
+                            // add element to card Wrapper
+                            repoCardWrapper.append(elem)
+                        }
+                    }
+                })
+
+                document.getElementsByClassName("main")[0].hidden = false
+                document.getElementById("loader").hidden = true
+            })
+
+
+    </script>
+</body>
+
+</html>
+
